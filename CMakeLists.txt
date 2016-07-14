@@ -8,9 +8,8 @@ set(LIBS)
 #search for Boost
 set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
-set(Boost_USE_STATIC_RUNTIME OFF)
-set(BOOST_ALL_DYN_LINK ON)
-set(BOOST_ALL_NO_LIB ON)
+add_definitions(-DBOOST_ALL_NO_LIB)
+add_definitions(-DBOOST_ALL_DYN_LINK)
 find_package(Boost 1.61 REQUIRED system program_options)
 
 #set up directories
@@ -20,6 +19,13 @@ link_directories(${Boost_LIBRARY_DIRS})
 #add libraries for linking
 set(LIBS ${LIBS} ${Boost_LIBRARIES})
 
-set(FREERDP_WEB_SOURCES src/main.cpp)
+set(FREERDP_WEB_SOURCES src/main.cpp
+                        src/log.cpp)
+
+if(WIN32)
+    set(FREERDP_WEB_SOURCES ${FREERDP_WEB_SOURCES} src/log.hpp)
+endif()
 
 add_executable(freerdp-web ${FREERDP_WEB_SOURCES})
+
+target_link_libraries(freerdp-web ${LIBS})
