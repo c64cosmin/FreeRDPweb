@@ -19,6 +19,13 @@ link_directories(${Boost_LIBRARY_DIRS})
 #add libraries for linking
 set(LIBS ${LIBS} ${Boost_LIBRARIES})
 
+#set the version string
+if(VERSION_STRING)
+    add_definitions(-DVERSION_STRING="${VERSION_STRING}")
+else()
+    add_definitions(-DVERSION_STRING="DEFAULT")
+endif()
+
 set(FREERDP_WEB_SOURCES src/main.cpp
                         src/log.cpp)
 

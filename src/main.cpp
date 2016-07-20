@@ -39,7 +39,7 @@ int parseCLI(int argc, char** argv){
     }
 
     if (variables.count("version")){
-        //do version
+        log::console << "Version: " << VERSION_STRING << std::endl;
         return 0;
     }
 
