@@ -27,10 +27,12 @@ else()
 endif()
 
 set(FREERDP_WEB_SOURCES src/main.cpp
-                        src/log.cpp)
+                        src/log.cpp
+                        src/service.cpp)
 
 if(WIN32)
-    set(FREERDP_WEB_SOURCES ${FREERDP_WEB_SOURCES} src/log.hpp)
+    set(FREERDP_WEB_SOURCES ${FREERDP_WEB_SOURCES} src/log.hpp
+                                                   src/service.hpp)
 endif()
 
 add_executable(freerdp-web ${FREERDP_WEB_SOURCES})

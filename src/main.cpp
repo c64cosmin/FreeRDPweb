@@ -1,4 +1,6 @@
 #include "log.hpp"
+//#include "server.hpp"
+#include "service.hpp"
 #include <boost\program_options.hpp>
 
 using namespace boost::program_options;
@@ -20,7 +22,12 @@ int parseCLI(int argc, char** argv){
     description.add_options()
         ("help,h", "Show this message and exit.")
         ("version,v", "Show version information and exit.")
-        ("config,c", "Path to config file.")
+        ("config,c", value<std::string>(), "Set the config file.")
+        ("install", value<std::string>(), "Install the service.")
+        ("uninstall", "Remove the service.")
+        ("start", "Start the service.")
+        ("stop", "Stop the service.")
+        ("restart", "Restart the service")
         ;
 
     variables_map variables;
@@ -44,8 +51,24 @@ int parseCLI(int argc, char** argv){
     }
 
     if (variables.count("config")){
-        //do serving
-        return 0;
+        Service s;
+        s.setConfigFile(variables["config"].as<std::string>());
+    }
+
+    if (variables.count("install")){
+        std::string path = variables["install"].as<std::string>();
+        if (path.empty()){
+            log::console << "Specify the full path for the config file";
+        }
+        else{
+            Service s;
+            s.install(path);
+        }
+    }
+
+    if (variables.count("uninstall")){
+        Service s;
+        s.uninstall();
     }
 
     log::console << "Config file is mandatory" << std::endl;
