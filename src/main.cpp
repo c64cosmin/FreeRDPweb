@@ -1,9 +1,9 @@
+#include <iostream>
+#include <fstream>
 #include "log.hpp"
 //#include "server.hpp"
 #include "service.hpp"
-#include <boost\program_options.hpp>
 
-using namespace boost::program_options;
 using namespace freerdpweb;
 
 int parseCLI(int argc, char** argv);
@@ -18,62 +18,67 @@ int main(int argc, char** argv){
 }
 
 int parseCLI(int argc, char** argv){
-    options_description description("Program options");
-    description.add_options()
-        ("help,h", "Show this message and exit.")
-        ("version,v", "Show version information and exit.")
-        ("config,c", value<std::string>(), "Set the config file.")
-        ("install", value<std::string>(), "Install the service.")
-        ("uninstall", "Remove the service.")
-        ("start", "Start the service.")
-        ("stop", "Stop the service.")
-        ("restart", "Restart the service")
-        ;
-
-    variables_map variables;
-    try{
-        store(parse_command_line(argc, argv, description), variables);
-        notify(variables);
-    }
-    catch (error &e){
-        log::console << "Wrong parameters, use:" << std::endl << argv[0] << " help" << std::endl;
-        return -1;
-    }
-
-    if (variables.count("help")){
-        log::console << description << std::endl;
-        return 0;
-    }
-
-    if (variables.count("version")){
-        log::console << "Version: " << VERSION_STRING << std::endl;
-        return 0;
-    }
-
-    if (variables.count("config")){
-        Service s;
-        s.setConfigFile(variables["config"].as<std::string>());
-    }
-
-    if (variables.count("install")){
-        std::string path = variables["install"].as<std::string>();
-        if (path.empty()){
-            log::console << "Specify the full path for the config file";
+    if (argc == 2){
+        std::string arg(argv[1]);
+        if (arg.compare("-h") == 0 || arg.compare("--help") == 0){
+            log::console << "-h [--help]           Show this message and exit." << std::endl;
+            log::console << "-v [--version]        Show version and exit." << std::endl;
+            log::console << "-c [--config] path    Set config file location; must be full path." << std::endl;
+            log::console << "-i [--install] path   Install the service and set config file location; must be full path." << std::endl;
+            log::console << "-u [--uninstall]      Remove the service." << std::endl;
+            log::console << "-s [--start]          Start the service." << std::endl;
+            log::console << "-x [--stop]           Stop the service." << std::endl;
+            log::console << "-r [--run]            Run the server, path file must be set" << std::endl;
+            return 0;
         }
-        else{
+        else if (arg.compare("-v") == 0 || arg.compare("--version") == 0){
+            log::console << VERSION_STRING << std::endl;
+            return 0;
+        }
+        else if (arg.compare("-c") == 0 || arg.compare("--config") == 0 ||
+            arg.compare("-i") == 0 || arg.compare("--install") == 0){
+            log::console << "Path to config file not specified!" << std::endl;
+            return 1;
+        }
+        else if (arg.compare("-u") == 0 || arg.compare("--uninstall") == 0){
             Service s;
-            s.install(path);
+            s.uninstall();
+            return 0;
+        }
+        else if (arg.compare("-s") == 0 || arg.compare("--start") == 0){
+            Service s;
+            s.start();
+            return 0;
+        }
+        else if (arg.compare("-x") == 0 || arg.compare("--stop") == 0){
+            Service s;
+            s.stop();
+            return 0;
+        }
+        else if (arg.compare("-r") == 0 || arg.compare("--run") == 0){
+            //Server s;
+            //return s.start();
+        }
+    }
+    else if (argc == 3){
+        std::string arg(argv[1]);
+        std::string path(argv[2]);
+        std::ifstream file;
+        file.open(path);
+        //the config file exists
+        if (file.good()){
+            if (arg.compare("-c") == 0 || arg.compare("--config") == 0){
+                Service::setConfigFile(path);
+                return 0;
+            }
+            else if (arg.compare("-i") == 0 || arg.compare("--install") == 0){
+                Service s;
+                s.install(path);
+                return 0;
+            }
         }
     }
 
-    if (variables.count("uninstall")){
-        Service s;
-        s.uninstall();
-    }
-
-    log::console << "Config file is mandatory" << std::endl;
-    log::console << argv[0] << " -c <path to config>" << std::endl;
-    log::console << argv[0] << " --help" << std::endl;
-
+    log::console << "Use \"" << argv[0] << " --help\" for more information." << std::endl;
     return 0;
 }
