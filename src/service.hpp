@@ -15,8 +15,7 @@ namespace freerdpweb{
     };
     class Service{
         public:
-            Service();
-            ~Service();
+            static Service* instance();
 
             void start();
             void stop();
@@ -24,18 +23,22 @@ namespace freerdpweb{
             void install(std::string pathConfigFile);
             void uninstall();
 
-            bool installed();
-            bool running();
+            virtual bool installed();
+            virtual bool running();
 
-            static std::string getConfigFile();
-            static void setConfigFile(std::string pathConfigFile);
-        private:
-            static std::string pathConfigFile;
+            virtual void run() = 0;
+
+            virtual std::string getConfigFile() = 0;
+            virtual void setConfigFile(std::string pathConfigFile) = 0;
+        protected:
+            static Service* _instance;
+
+            std::string pathConfigFile;
 
             bool isInstalled;
             bool isRunning;
 
-            void issueServiceCommand(ServiceCommand command);
+            virtual void issueServiceCommand(ServiceCommand command) = 0;
     };
 }
 #endif //_SERVICE_HPP_

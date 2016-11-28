@@ -14,11 +14,13 @@ endif()
 
 set(FREERDP_WEB_SOURCES src/main.cpp
                         src/log.cpp
-                        src/service.cpp)
+                        src/service.cpp
+                        src/nt_service.cpp
 
 if(WIN32)
     set(FREERDP_WEB_SOURCES ${FREERDP_WEB_SOURCES} src/log.hpp
-                                                   src/service.hpp)
+                                                   src/service.hpp
+                                                   src/nt_service.hpp)
 endif()
 
 add_executable(freerdp-web ${FREERDP_WEB_SOURCES})

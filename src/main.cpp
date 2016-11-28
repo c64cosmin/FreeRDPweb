@@ -2,7 +2,9 @@
 #include <fstream>
 #include "log.hpp"
 //#include "server.hpp"
-#include "service.hpp"
+#ifdef _WIN32
+#include "nt_service.hpp"
+#endif
 
 using namespace freerdpweb;
 
@@ -10,6 +12,9 @@ int parseCLI(int argc, char** argv);
 int main(int argc, char** argv){
     log::create();
 
+#ifdef _WIN32
+    NTService::init();
+#endif
     int result = parseCLI(argc, argv);
 
     log::destroy();
@@ -41,18 +46,15 @@ int parseCLI(int argc, char** argv){
             return 1;
         }
         else if (arg.compare("-u") == 0 || arg.compare("--uninstall") == 0){
-            Service s;
-            s.uninstall();
+            Service::instance()->uninstall();
             return 0;
         }
         else if (arg.compare("-s") == 0 || arg.compare("--start") == 0){
-            Service s;
-            s.start();
+            Service::instance()->start();;
             return 0;
         }
         else if (arg.compare("-x") == 0 || arg.compare("--stop") == 0){
-            Service s;
-            s.stop();
+            Service::instance()->stop();
             return 0;
         }
         else if (arg.compare("-r") == 0 || arg.compare("--run") == 0){
@@ -68,17 +70,20 @@ int parseCLI(int argc, char** argv){
         //the config file exists
         if (file.good()){
             if (arg.compare("-c") == 0 || arg.compare("--config") == 0){
-                Service::setConfigFile(path);
+                Service::instance()->setConfigFile(path);
                 return 0;
             }
             else if (arg.compare("-i") == 0 || arg.compare("--install") == 0){
-                Service s;
-                s.install(path);
+                Service::instance()->install(path);
                 return 0;
             }
         }
     }
 
+#ifdef _WIN32
+    Service::instance()->run();
+#endif
     log::console << "Use \"" << argv[0] << " --help\" for more information." << std::endl;
+
     return 0;
 }
