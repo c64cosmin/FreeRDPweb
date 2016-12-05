@@ -18,9 +18,6 @@ namespace freerdpweb{
         issueServiceCommand(SC_QUERY);
     }
 
-    NTService::~NTService(){
-    }
-
     void NTService::issueServiceCommand(ServiceCommand command){
         SC_HANDLE hSCM = NULL;
         SC_HANDLE hService = NULL;
@@ -146,19 +143,6 @@ namespace freerdpweb{
             //or it should be stopped
             this->isRunning = true;
         }
-    }
-
-    bool NTService::running(){
-        running_lock.lock();
-        bool result = this->isRunning;
-        running_lock.unlock();
-        return result;
-    }
-
-    void NTService::setRunning(bool state){
-        running_lock.lock();
-        this->isRunning = state;
-        running_lock.unlock();
     }
 
     std::string NTService::getConfigFile(){
@@ -287,8 +271,8 @@ VOID WINAPI ServiceCtrlHandler(DWORD CtrlCode){
         }
 
         setServiceStoping(1);
-        //tell the service we should stop
-        ((freerdpweb::NTService*)freerdpweb::Service::instance())->setRunning(false);
+        //tell the server we should stop
+        freerdpweb::Server::instance()->setRunning(false);
 
         break;
     }
@@ -306,14 +290,11 @@ VOID WINAPI ServiceMain(DWORD argc, LPTSTR *argv){
 
     setServicePending(0);
 
-    freerdpweb::Server s;
-    Sleep(1000);
+    auto server = freerdpweb::Server::instance();
 
     setServiceRunning();
 
-    Sleep(10000);
-
-    int result = s.start();
+    int result = server->start();
 
     setServiceStopped(result, 2);
 }

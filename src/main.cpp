@@ -1,7 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include "log.hpp"
-//#include "server.hpp"
+#include "server.hpp"
 #ifdef _WIN32
 #include "nt_service.hpp"
 #endif
@@ -58,8 +58,8 @@ int parseCLI(int argc, char** argv){
             return 0;
         }
         else if (arg.compare("-r") == 0 || arg.compare("--run") == 0){
-            //Server s;
-            //return s.start();
+            auto server = freerdpweb::Server::instance();
+            return server->start();
         }
     }
     else if (argc == 3){

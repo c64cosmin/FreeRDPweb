@@ -2,14 +2,23 @@
 #define _SERVER_HPP_
 
 #include<string>
+#include<mutex>
 
 namespace freerdpweb{
     class Server{
     public:
-        Server();
-        ~Server();
+        static Server* instance();
 
-        int start();   
+        void setRunning(bool state);
+        bool running();
+
+        int start();
+    private:
+        static Server* _instance;
+        Server();
+
+        std::mutex running_lock;
+        bool isRunning;
     };
 }
 
