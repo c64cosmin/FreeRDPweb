@@ -1,5 +1,7 @@
 #include "server.hpp"
-#include <Windows.h>
+#include <chrono>
+#include <thread>
+using namespace std::chrono_literals;
 
 namespace freerdpweb{
     Server* Server::instance(){
@@ -31,7 +33,7 @@ namespace freerdpweb{
     int Server::start(){
         setRunning(true);
         while (this->running()){
-            Sleep(10);
+            std::this_thread::sleep_for(1000ms);
         }
         return 0;
     }

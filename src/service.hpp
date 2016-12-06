@@ -26,8 +26,6 @@ namespace freerdpweb{
             bool installed();
             bool running();
 
-            virtual void run() = 0;
-
             virtual std::string getConfigFile() = 0;
             virtual void setConfigFile(std::string pathConfigFile) = 0;
         protected:

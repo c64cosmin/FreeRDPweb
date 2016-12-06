@@ -1,23 +1,22 @@
-#ifdef _WIN32
-#ifndef _NT_SERVICE_HPP_
-#define _NT_SERVICE_HPP_
+#ifndef _DAEMON_HPP_
+#define _DAEMON_HPP_
 
 #include "service.hpp"
 
 namespace freerdpweb{
-    class NTService : public Service{
+    class Daemon : public Service{
         public:
             static void init();
-            void run();
 
             virtual std::string getConfigFile();
             virtual void setConfigFile(std::string pathConfigFile);
         protected:
             virtual void issueServiceCommand(ServiceCommand command);
         private:
-            NTService();
+            Daemon();
+
+            unsigned int getProcessPID(std::string procname);
     };
 }
 
-#endif //_NT_SERVICE_HPP_
-#endif
+#endif //_DAEMON_HPP_

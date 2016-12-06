@@ -4,6 +4,8 @@
 #include "server.hpp"
 #ifdef _WIN32
 #include "nt_service.hpp"
+#else
+#include "daemon.hpp"
 #endif
 
 using namespace freerdpweb;
@@ -14,6 +16,8 @@ int main(int argc, char** argv){
 
 #ifdef _WIN32
     NTService::init();
+#else
+    Daemon::init();
 #endif
     int result = parseCLI(argc, argv);
 
@@ -50,7 +54,7 @@ int parseCLI(int argc, char** argv){
             return 0;
         }
         else if (arg.compare("-s") == 0 || arg.compare("--start") == 0){
-            Service::instance()->start();;
+            Service::instance()->start();
             return 0;
         }
         else if (arg.compare("-x") == 0 || arg.compare("--stop") == 0){
@@ -81,7 +85,7 @@ int parseCLI(int argc, char** argv){
     }
 
 #ifdef _WIN32
-    Service::instance()->run();
+    ((NTService*)Service::instance())->run();
 #endif
     log::console << "Use \"" << argv[0] << " --help\" for more information." << std::endl;
 
